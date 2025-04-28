@@ -3,6 +3,7 @@ from typing import Optional
 from dependency_injector import containers, providers
 
 from src.application.services.user_service import UserService
+from src.config import Settings
 from src.infrastructure.mongodb.config import BeanieClient
 from src.infrastructure.mongodb.repositories.user import BeanieUserRepository
 from src.observability.logging import AppLogger
@@ -14,7 +15,7 @@ class Container(containers.DeclarativeContainer):
     )
 
     # Configuration.
-    config = providers.Configuration()
+    config = providers.Configuration(pydantic_settings=[Settings()])
 
     # Setup logging
     logger = providers.Resource(

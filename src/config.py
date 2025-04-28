@@ -1,6 +1,6 @@
 from typing import Literal, Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, IPvAnyAddress
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -15,6 +15,11 @@ class MongoDBSettings(BaseModel):
     database: str
 
 
+class RestServerSettings(BaseModel):
+    host: Optional[IPvAnyAddress] = '0.0.0.0'
+    port: Optional[int] = 5000
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_nested_delimiter='__',
@@ -26,3 +31,4 @@ class Settings(BaseSettings):
     environment: Literal["production", "staging", "development"] = "development"
     log_level: Literal["debug", "info", "warning", "error", "critical"] = "info"
     mongo: MongoDBSettings
+    rest_server: Optional[RestServerSettings] = RestServerSettings()

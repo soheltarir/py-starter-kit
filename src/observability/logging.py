@@ -58,7 +58,7 @@ class StructuredAppLogRenderer:
 
 
 def add_correlation(_: logging.Logger, __: str, event_dict: dict[str, Any]) -> dict[str, Any]:
-    """Add request id to log message."""
+    """Add request id to log a message."""
     if request_id := correlation_id.get():
         event_dict["request_id"] = request_id
     return event_dict
@@ -124,7 +124,7 @@ class AppLogger(resources.Resource):
             override_logger.handlers = []
             override_logger.propagate = True
             override_logger.addHandler(handler)
-            override_logger.setLevel(LOG_LEVEL_MAP[self._log_level])
+            override_logger.setLevel(self._log_level)
 
 
     def init(
@@ -142,7 +142,7 @@ class AppLogger(resources.Resource):
         self._service_namespace = service_namespace
         self._service_version = service_version
         self._environment = environment
-        self._log_level = log_level
+        self._log_level = LOG_LEVEL_MAP[log_level]
 
         self._setup_structlog()
         self._setup_stdlib_log()

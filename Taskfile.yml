@@ -1,0 +1,73 @@
+version: '3'
+
+vars:
+  PYTHON: poetry run python
+  COMPOSE_FILE: infra.compose.yml
+
+tasks:
+  run:rest:dev:
+    desc: Run REST server locally at 0.0.0.0:5000
+    cmd: poetry run python main.py run_rest_server
+  infra:start:
+    desc: Start infrastructure services
+    dir: ./deployments/local
+    cmds:
+      - docker compose -f infra.compose.yml up -d
+
+  infra:stop:
+    desc: Stop infrastructure services
+    dir: ./deployments/local
+    cmds:
+      - docker compose -f infra.compose.yml down
+
+  infra:logs:
+    desc: Show infrastructure logs
+    dir: ./deployments/local
+    cmds:
+      - docker compose -f infra.compose.yml logs -f
+
+  test:
+    desc: Run pytest with coverage
+    cmds:
+      - poetry run pytest -v --cov=src --cov-report=html --cov-report=term-missing tests/
+
+  clean:
+    desc: Clean temporary files and caches
+    cmds:
+      - rm -rf .pytest_cache
+      - rm -rf .coverage
+      - rm -rf htmlcov
+      - rm -rf .ruff_cache
+      - rm -rf **/__pycache__
+      - rm -rf .mypy_cache
+
+  deps:install:
+    desc: Install project dependencies
+    cmds:
+      - poetry install
+
+  deps:update:
+    desc: Update dependencies
+    cmds:
+      - poetry update
+
+  deps:outdated:
+    desc: Show outdated dependencies
+    cmds:
+      - poetry show --outdated
+
+
+  docker:build:
+    desc: Build Docker image
+    cmds:
+      - docker build -t py-starter-kit:latest -f ./deployments/Dockerfile .
+
+  docker:run:
+    desc: Run Docker container with env file
+    cmds:
+      - |
+        docker run --rm \
+          -p 8000:8000 \
+          --env-file .env \
+          --network host \
+          py-starter-kit:latest

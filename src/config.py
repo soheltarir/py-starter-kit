@@ -11,8 +11,8 @@ class ServiceConfig(BaseModel):
 
 
 class MongoDBSettings(BaseModel):
-    uri: str
-    database: str
+    uri: Optional[str] = 'mongodb://localhost:27017/'
+    database: Optional[str] = 'test_db'
 
 
 class RestServerSettings(BaseModel):
@@ -30,5 +30,5 @@ class Settings(BaseSettings):
     service: ServiceConfig = ServiceConfig()
     environment: Literal["production", "staging", "development"] = "development"
     log_level: Literal["debug", "info", "warning", "error", "critical"] = "info"
-    mongo: MongoDBSettings
+    mongo: Optional[MongoDBSettings] = MongoDBSettings()
     rest_server: Optional[RestServerSettings] = RestServerSettings()

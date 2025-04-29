@@ -19,7 +19,8 @@ def configure_uvicorn_logging():
 @click.command()
 @click.option("--host", default="0.0.0.0", help="Host to run the server on")
 @click.option("--port", default=5000, help="Port to run the server on")
-def run_rest_server(host: str, port: int):
+@click.option("--workers", default=1, help="Number of workers to run the server with")
+def run_rest_server(host: str, port: int, workers: int):
     try:
         configure_uvicorn_logging()
         container = get_container()
@@ -29,8 +30,9 @@ def run_rest_server(host: str, port: int):
             host=host, port=port,
             log_config=None,    # Disable uvicorn default logging
             log_level=container.config.log_level(),
-            access_log=True,
+            access_log=False,
             reload=True if container.config.environment() == "development" else False,
+            workers=workers
         )
 
         server = uvicorn.Server(config)

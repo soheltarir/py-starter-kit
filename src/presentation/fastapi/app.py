@@ -29,7 +29,10 @@ async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
 def create_app() -> FastAPI:
 
     # Create the FastAPI app
-    _app = FastAPI(title="DDD FastAPI Application", lifespan=lifespan)
+    _app = FastAPI(
+        title="DDD FastAPI Application",
+        lifespan=lifespan
+    )
     # Include API router
     _app.include_router(api_v1_router)
 

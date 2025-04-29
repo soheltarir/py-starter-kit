@@ -1,9 +1,8 @@
-from typing import Optional, Union
+from typing import Optional
 
 import structlog
 from beanie import init_beanie
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
-from mongomock_motor import AsyncMongoMockClient
 from pymongo.errors import ServerSelectionTimeoutError, OperationFailure, ConfigurationError
 
 from src.infrastructure.mongodb.model_registry import MONGODB_MODELS
@@ -24,14 +23,14 @@ class MongoDBAuthenticationError(Exception):
 class BeanieClient:
     mongo_uri: str
     mongo_database: str
-    client: Optional[Union[AsyncIOMotorClient, AsyncMongoMockClient]]
+    client: Optional[AsyncIOMotorClient]
     db: Optional[AsyncIOMotorDatabase]
 
     def __init__(
             self, 
             mongo_uri: str, 
             mongo_database: str,
-            client: Optional[Union[AsyncIOMotorClient, AsyncMongoMockClient]] = None
+            client: Optional[AsyncIOMotorClient] = None
         ):
         self.mongo_uri = mongo_uri
         self.mongo_database = mongo_database

@@ -17,6 +17,7 @@ def mock_motor_client():
     return AsyncMongoMockClient()
 
 
+@pytest.mark.asyncio
 async def test_initialize_success(beanie_client, mock_motor_client):
     # Setup
     beanie_client.client = mock_motor_client
@@ -30,6 +31,7 @@ async def test_initialize_success(beanie_client, mock_motor_client):
     assert beanie_client.db.name == "test_db"
 
 
+@pytest.mark.asyncio
 async def test_close_success(beanie_client, mock_motor_client):
     # Setup
     beanie_client.client = mock_motor_client
@@ -43,6 +45,7 @@ async def test_close_success(beanie_client, mock_motor_client):
     assert beanie_client.db is None
 
 
+@pytest.mark.asyncio
 async def test_close_without_initialization(beanie_client):
     # Execute
     await beanie_client.close()

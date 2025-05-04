@@ -23,11 +23,11 @@ LOG_LEVEL_MAP: dict[str, Any] = {
 class StructuredAppLogRenderer:
     def __init__(
         self,
-            service_name: str,
-            env: Literal["production", "staging", "development"],
-            serializer: Callable = json.dumps,
-            service_namespace: Optional[str] = None,
-            service_version: Optional[str] = None,
+        service_name: str,
+        env: Literal["production", "staging", "development"],
+        serializer: Callable = json.dumps,
+        service_namespace: Optional[str] = None,
+        service_version: Optional[str] = None,
     ):
         self._dumps = serializer
         self._service_name = service_name
@@ -57,7 +57,9 @@ class StructuredAppLogRenderer:
         return self._dumps(log_data)
 
 
-def add_correlation(_: logging.Logger, __: str, event_dict: dict[str, Any]) -> dict[str, Any]:
+def add_correlation(
+    _: logging.Logger, __: str, event_dict: dict[str, Any]
+) -> dict[str, Any]:
     """Add request id to log a message."""
     if request_id := correlation_id.get():
         event_dict["request_id"] = request_id
@@ -82,7 +84,7 @@ class AppLogger(resources.Resource):
         ]
 
     def _get_final_processors(self) -> List[Processor]:
-        if self._environment == 'production':
+        if self._environment == "production":
             processors = [
                 structlog.processors.dict_tracebacks,
                 StructuredAppLogRenderer(
@@ -125,7 +127,6 @@ class AppLogger(resources.Resource):
             override_logger.propagate = True
             override_logger.addHandler(handler)
             override_logger.setLevel(self._log_level)
-
 
     def init(
         self,

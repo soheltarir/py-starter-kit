@@ -1,22 +1,39 @@
 import uuid
 
+import structlog
+
 from src.application.dto.user_dto import UserCreateDTO, UserReadDTO
+from src.domain.background_task.adaptor import BackgroundTaskProcessor, BackgroundTask
 from src.domain.users.entities import User
 from src.domain.users.exceptions import UserAlreadyExistsError, UserNotFoundError
 from src.domain.users.repositories import UserRepository
 
+logger = structlog.get_logger()
+
+
+class WelcomeEmailTask(BackgroundTask):
+    task_name = "welcome_email"
+
+    user_id: uuid.UUID
+
+    def logic(self):
+        logger.info("Sending welcome email", user_id=self.user_id)
+
 
 class UserService:
-    def __init__(self, user_repository: UserRepository):
+    def __init__(
+        self, user_repository: UserRepository, task_processor: BackgroundTaskProcessor
+    ):
         self.user_repository = user_repository
+        self.task_processor = task_processor
 
     async def register(self, user_dto: UserCreateDTO) -> UserReadDTO:
-        # Check if user already exists
+        # Check if a user already exists
         existing_user = await self.user_repository.get_by_email(user_dto.email)
         if existing_user:
             raise UserAlreadyExistsError(user_dto.email)
 
-        # Create user entity
+        # Create a user entity
         user = User(
             email=user_dto.email,
             first_name=user_dto.first_name or "",
@@ -27,6 +44,11 @@ class UserService:
 
         # Save user
         created_user = await self.user_repository.save(user)
+
+        # Send a welcome email
+        await self.task_processor.execute_task(
+            WelcomeEmailTask(user_id=created_user.id)
+        )
 
         # Return user DTO
         return UserReadDTO(

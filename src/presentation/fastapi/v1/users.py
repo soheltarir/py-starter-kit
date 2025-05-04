@@ -11,17 +11,17 @@ from src.domain.users.exceptions import UserAlreadyExistsError, UserNotFoundErro
 
 router = APIRouter()
 
+
 @router.post(
-    '/',
+    "/",
     response_model=UserReadDTO,
     status_code=status.HTTP_201_CREATED,
-    summary='Register a new user',
-    description='Register a new user with email and password',
+    summary="Register a new user",
+    description="Register a new user with email and password",
 )
 @inject
 async def register_user(
-        data: UserCreateDTO,
-        svc: UserService = Depends(Provide[Container.user_svc])
+    data: UserCreateDTO, svc: UserService = Depends(Provide[Container.user_svc])
 ):
     try:
         return await svc.register(data)
@@ -37,8 +37,7 @@ async def register_user(
 )
 @inject
 async def get_user(
-    user_id: UUID,
-    svc: UserService = Depends(Provide[Container.user_svc])
+    user_id: UUID, svc: UserService = Depends(Provide[Container.user_svc])
 ):
     """Get a user by ID."""
     try:

@@ -80,6 +80,7 @@ def user_read_dto():
     )
 
 
+@pytest.mark.asyncio
 async def test_register_user_success(app, client, mock_user_service, user_create_dto, user_read_dto):
     # Setup
     mock_user_service.register.return_value = user_read_dto
@@ -92,6 +93,7 @@ async def test_register_user_success(app, client, mock_user_service, user_create
     assert response.json() == user_read_dto.model_dump(mode='json')
 
 
+@pytest.mark.asyncio
 async def test_register_user_already_exists(client, mock_user_service, user_create_dto):
     # Setup
     mock_user_service.register.side_effect = UserAlreadyExistsError(user_create_dto.email)
@@ -104,6 +106,7 @@ async def test_register_user_already_exists(client, mock_user_service, user_crea
     assert "already exists" in response.json()["detail"]
 
 
+@pytest.mark.asyncio
 async def test_get_user_success(client, mock_user_service, user_read_dto):
     # Setup
     mock_user_service.get_user.return_value = user_read_dto
@@ -116,6 +119,7 @@ async def test_get_user_success(client, mock_user_service, user_read_dto):
     assert response.json() == user_read_dto.model_dump(mode='json')
 
 
+@pytest.mark.asyncio
 async def test_get_user_not_found(client, mock_user_service):
     # Setup
     user_id = uuid.uuid4()

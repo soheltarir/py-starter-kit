@@ -17,12 +17,13 @@ class DateTimeMixin:
     Created and updated at mixin that automatically
     updates the updated_at field
     """
-    created_at: datetime = Field(default_factory=_get_utc_now)
-    updated_at: Annotated[datetime, AfterValidator(_set_updated_at)] = Field(default_factory=_get_utc_now)
 
-    model_config = ConfigDict(
-        validate_assignment=True
+    created_at: datetime = Field(default_factory=_get_utc_now)
+    updated_at: Annotated[datetime, AfterValidator(_set_updated_at)] = Field(
+        default_factory=_get_utc_now
     )
+
+    model_config = ConfigDict(validate_assignment=True)
 
 
 __all__ = ("DateTimeMixin",)

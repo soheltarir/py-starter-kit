@@ -29,7 +29,7 @@ tasks:
   test:
     desc: Run pytest with coverage
     cmds:
-      - poetry run pytest -v --cov=src --cov-report=html --cov-report=term-missing tests/
+      - poetry run pytest -v
 
   clean:
     desc: Clean temporary files and caches
@@ -57,17 +57,31 @@ tasks:
       - poetry show --outdated
 
 
-  docker:build:
-    desc: Build Docker image
+  docker:build:rest:
+    desc: Build REST server Docker image
     cmds:
-      - docker build -t py-starter-kit:latest -f ./deployments/Dockerfile .
+      - docker build -t py-starter-kit/rest:latest -f ./deployments/rest.dockerfile .
 
-  docker:run:
-    desc: Run Docker container with env file
+  docker:run:rest:
+    desc: Run REST server Docker container with env file
     cmds:
       - |
         docker run --rm \
           -p 8000:8000 \
           --env-file .env \
           --network host \
-          py-starter-kit:latest
+          py-starter-kit/rest:latest
+
+  docker:build:celery:
+    desc: Build Celery worker Docker image
+    cmds:
+      - docker build -t py-starter-kit/celery_worker:latest -f ./deployments/celery_worker.dockerfile .
+
+  docker:run:celery:
+    desc: Run Celery worker Docker container with env file
+    cmds:
+      - |
+        docker run --rm \
+          --env-file .env \
+          --network host \
+          py-starter-kit/celery_worker:latest

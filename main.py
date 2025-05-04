@@ -1,7 +1,7 @@
 import logging
 import sys
 
-import click
+import asyncclick as click
 import structlog
 import uvicorn
 from uvicorn.config import LOGGING_CONFIG
@@ -20,10 +20,11 @@ def configure_uvicorn_logging():
 @click.option("--host", default="0.0.0.0", help="Host to run the server on")
 @click.option("--port", default=5000, help="Port to run the server on")
 @click.option("--workers", default=1, help="Number of workers to run the server with")
-def run_rest_server(host: str, port: int, workers: int):
+async def run_rest_server(host: str, port: int, workers: int):
     try:
         configure_uvicorn_logging()
         container = get_container()
+        await container.init_resources()
 
         config = uvicorn.Config(
             app="src.presentation.fastapi.app:app",
@@ -36,12 +37,20 @@ def run_rest_server(host: str, port: int, workers: int):
         )
 
         server = uvicorn.Server(config)
-        server.run()
+        await server.serve()
 
     except Exception as e:
         logger.error("Failed to start uvicorn server", exc_info=e)
         sys.exit(1)
 
+
+@click.command()
+async def run_celery_worker():
+    container = get_container()
+    await container.init_resources()
+    celery_processor = await container.task_processor()
+    celery_app = celery_processor.celery_app
+    celery_app.worker_main(["worker", "-l", "info"])
 
 @click.group()
 def cli():
@@ -49,6 +58,7 @@ def cli():
 
 
 cli.add_command(run_rest_server, name="run_rest_server")
+cli.add_command(run_celery_worker, name="run_celery_worker")
 
 
 if __name__ == "__main__":

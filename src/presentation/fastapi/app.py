@@ -10,13 +10,15 @@ from ...containers import Container
 @asynccontextmanager
 async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
     container = Container()
-    container.init_resources()
+    await container.init_resources()
     # Initialize database
     await container.db().initialize()
     # Wire the container to the application modules
-    container.wire(modules=[
-        "src.presentation.fastapi.v1.users",
-    ])
+    container.wire(
+        modules=[
+            "src.presentation.fastapi.v1.users",
+        ]
+    )
 
     yield
 
@@ -29,10 +31,7 @@ async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
 def create_app() -> FastAPI:
 
     # Create the FastAPI app
-    _app = FastAPI(
-        title="DDD FastAPI Application",
-        lifespan=lifespan
-    )
+    _app = FastAPI(title="DDD FastAPI Application", lifespan=lifespan)
     # Include API router
     _app.include_router(api_v1_router)
 

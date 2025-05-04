@@ -4,9 +4,9 @@ from pydantic import BaseModel
 
 
 class AddressType(str, Enum):
-    Home = 'home'
-    Work = 'work'
-    Other = 'other'
+    Home = "home"
+    Work = "work"
+    Other = "other"
 
 
 class UserAddress(BaseModel):

@@ -40,7 +40,7 @@ The project follows a Domain-Driven Design (DDD) architecture with a clear separ
 - [x] FastAPI as the REST presentation layer
 - [ ] Model Context Protocol (MCP)
 - [ ] WebSocket support
-- [ ] Background job processing using Celery
+- [x] Background job processing using Celery
 
 ### Databases
 

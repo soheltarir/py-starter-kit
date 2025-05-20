@@ -1,15 +1,17 @@
 from uuid import UUID
 
-from dependency_injector.wiring import inject, Provide
 from fastapi import APIRouter, Depends, HTTPException
+from kink import di, inject
 from starlette import status
 
-from src.application.services.user_service import UserService
 from src.application.dto.user_dto import UserReadDTO, UserCreateDTO
-from src.containers import Container
+from src.application.services.user_service import UserService
 from src.domain.users.exceptions import UserAlreadyExistsError, UserNotFoundError
 
 router = APIRouter()
+
+def get_user_service():
+    return di[UserService]
 
 
 @router.post(
@@ -21,7 +23,7 @@ router = APIRouter()
 )
 @inject
 async def register_user(
-    data: UserCreateDTO, svc: UserService = Depends(Provide[Container.user_svc])
+    data: UserCreateDTO, svc: UserService = Depends(get_user_service)
 ):
     try:
         return await svc.register(data)
@@ -37,7 +39,7 @@ async def register_user(
 )
 @inject
 async def get_user(
-    user_id: UUID, svc: UserService = Depends(Provide[Container.user_svc])
+    user_id: UUID, svc: UserService = Depends(get_user_service)
 ):
     """Get a user by ID."""
     try:

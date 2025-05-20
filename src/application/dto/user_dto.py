@@ -3,6 +3,7 @@ from uuid import UUID
 
 from pydantic import BaseModel, EmailStr, Field
 
+from src.domain.background_task.value_objects import BackgroundTaskPayload
 from src.domain.users.value_objects import UserAddress
 
 
@@ -24,3 +25,7 @@ class UserReadDTO(BaseModel):
     first_name: Optional[str] = None
     last_name: Optional[str] = None
     addresses: list[UserAddress] = []
+
+
+class WelcomeEmailTaskPayload(BackgroundTaskPayload):
+    recipients: list[EmailStr]

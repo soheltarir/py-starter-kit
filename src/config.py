@@ -20,6 +20,10 @@ class RestServerSettings(BaseModel):
     port: Optional[int] = 5000
 
 
+class TaskiqSettings(BaseModel):
+    broker_url: Optional[str] = None
+
+
 class CelerySettings(BaseModel):
     broker: Optional[str] = None
     result_backend: Optional[str] = None
@@ -39,3 +43,4 @@ class Settings(BaseSettings):
     mongo: Optional[MongoDBSettings] = MongoDBSettings()
     rest_server: Optional[RestServerSettings] = RestServerSettings()
     celery: Optional[CelerySettings] = CelerySettings()
+    taskiq: Optional[TaskiqSettings] = TaskiqSettings()

@@ -4,9 +4,10 @@ import sys
 import asyncclick as click
 import structlog
 import uvicorn
+from kink import di
 from uvicorn.config import LOGGING_CONFIG
 
-from src.containers import get_container
+from src.config import Settings
 
 logger = structlog.get_logger()
 
@@ -23,16 +24,15 @@ def configure_uvicorn_logging():
 async def run_rest_server(host: str, port: int, workers: int):
     try:
         configure_uvicorn_logging()
-        container = get_container()
-        await container.init_resources()
+        settings = di[Settings]
 
         config = uvicorn.Config(
             app="src.presentation.fastapi.app:app",
             host=host, port=port,
             log_config=None,    # Disable uvicorn default logging
-            log_level=container.config.log_level(),
+            log_level=settings.log_level,
             access_log=False,
-            reload=True if container.config.environment() == "development" else False,
+            reload=True if settings.environment == "development" else False,
             workers=workers
         )
 

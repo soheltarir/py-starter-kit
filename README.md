@@ -29,7 +29,7 @@ The project follows a Domain-Driven Design (DDD) architecture with a clear separ
 ## Features
 
 - [x] Domain-Driven Design (DDD) architecture
-- [x] Dependency Injection using Python-Dependency-Injector
+- [x] Dependency Injection using Kink
 - [x] Poetry for dependency management
 - [x] Configuration Management using Pydantic Settings
 - [x] Custom Logger
@@ -40,7 +40,7 @@ The project follows a Domain-Driven Design (DDD) architecture with a clear separ
 - [x] FastAPI as the REST presentation layer
 - [ ] Model Context Protocol (MCP)
 - [ ] WebSocket support
-- [x] Background job processing using Celery
+- [x] Background job processing using Taskiq
 
 ### Databases
 

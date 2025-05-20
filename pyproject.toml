@@ -21,7 +21,10 @@ dependencies = [
     "structlog (>=25.3.0,<26.0.0)",
     "asgi-correlation-id (>=4.3.4,<5.0.0)",
     "click (>=8.1.8,<9.0.0)",
-    "asyncclick (>=8.1.8,<9.0.0)"
+    "asyncclick (>=8.1.8,<9.0.0)",
+    "taskiq (>=0.11.17,<0.12.0)",
+    "kink (>=0.8.1,<0.9.0)",
+    "taskiq-aio-pika (>=0.4.2,<0.5.0)"
 ]
 
 [build-system]
@@ -47,7 +50,15 @@ asyncio_mode = "auto"
 
 [tool.coverage.run]
 source = ["src"]
-omit = ["tests/*", "**/__init__.py"]
+omit = [
+    "tests/*",
+    "**/__init__.py",
+    "src/presentation/fastapi/app.py",
+    "src/presentation/taskiq/app.py",
+    "src/di.py",
+    "src/config.py",
+    "src/infrastructure/mongodb/config.py"
+]
 
 [tool.coverage.report]
 exclude_lines = [

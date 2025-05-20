@@ -5,11 +5,8 @@ from typing import Callable, Literal, Optional, List, Any
 
 import structlog
 from asgi_correlation_id import correlation_id
-from dependency_injector import resources
-from dependency_injector.resources import T
 from structlog.testing import LogCapture
 from structlog.typing import WrappedLogger, EventDict, Processor
-
 
 LOG_LEVEL_MAP: dict[str, Any] = {
     "debug": logging.DEBUG,
@@ -66,13 +63,24 @@ def add_correlation(
     return event_dict
 
 
-class AppLogger(resources.Resource):
-    def __init__(self):
-        self._log_level = None
-        self._environment = None
-        self._service_version = None
-        self._service_namespace = None
-        self._service_name = None
+class AppLogger:
+    def __init__(
+        self,
+        service_name: str,
+        log_level: str,
+        environment: str,
+        service_namespace: Optional[str] = None,
+        service_version: Optional[str] = None,
+        # Below is just used for testing
+        log_output: Optional[LogCapture] = None,
+    ):
+        # Initialisation
+        self.log_output = log_output
+        self._service_name = service_name
+        self._service_namespace = service_namespace
+        self._service_version = service_version
+        self._environment = environment
+        self._log_level = LOG_LEVEL_MAP[log_level]
 
         # Base Processors
         self._base_processors: List[Processor] = [
@@ -82,6 +90,10 @@ class AppLogger(resources.Resource):
             structlog.processors.StackInfoRenderer(),
             structlog.processors.TimeStamper(utc=True),
         ]
+
+
+        self._setup_structlog()
+        self._setup_stdlib_log()
 
     def _get_final_processors(self) -> List[Processor]:
         if self._environment == "production":
@@ -97,7 +109,7 @@ class AppLogger(resources.Resource):
         else:
             processors = [
                 structlog.dev.ConsoleRenderer(
-                    exception_formatter=structlog.dev.better_traceback
+                    # exception_formatter=structlog.dev.better_traceback
                 )
             ]
         return processors
@@ -127,29 +139,6 @@ class AppLogger(resources.Resource):
             override_logger.propagate = True
             override_logger.addHandler(handler)
             override_logger.setLevel(self._log_level)
-
-    def init(
-        self,
-        service_name: str,
-        log_level: str,
-        environment: str,
-        service_namespace: Optional[str] = None,
-        service_version: Optional[str] = None,
-        # Below is just used for testing
-        log_output: Optional[LogCapture] = None,
-    ):
-        # Initialisation
-        self._service_name = service_name
-        self._service_namespace = service_namespace
-        self._service_version = service_version
-        self._environment = environment
-        self._log_level = LOG_LEVEL_MAP[log_level]
-
-        self._setup_structlog()
-        self._setup_stdlib_log()
-
-    def shutdown(self, resource: Optional[T]) -> None:
-        pass
 
 
 __all__ = ["AppLogger"]
